@@ -1,0 +1,128 @@
+{
+  "employees": [
+    {
+      "id": 1,
+      "name": "saif",
+      "role": "مهندس إلكترونيات",
+      "dept": "تقنية",
+      "email": "saif@company.com",
+      "phone": "+966501234567",
+      "color": "blue",
+      "join": "2024-01-01",
+      "notes": "متخصص في الإلكترونيات والأردوينو"
+    },
+    {
+      "id": 2,
+      "name": "muhmad",
+      "role": "مهندس إلكترونيات",
+      "dept": "تقنية",
+      "email": "muhmad@company.com",
+      "phone": "+966502345678",
+      "color": "green",
+      "join": "2024-01-01",
+      "notes": "متخصص في الإضاءة والإلكترونيات"
+    },
+    {
+      "id": 3,
+      "name": "abood",
+      "role": "مهندس ميكانيكي",
+      "dept": "تقنية",
+      "email": "abood@company.com",
+      "phone": "+966503456789",
+      "color": "purple",
+      "join": "2024-01-01",
+      "notes": "متخصص في المحركات والحساسات"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "name": "sun plats",
+      "emp": 1,
+      "cat": "إلكترونيات",
+      "priority": "high",
+      "status": "prog",
+      "start": "2024-04-01",
+      "end": "2024-04-15",
+      "prog": 50,
+      "note": "تصميم لوحات شمسية"
+    },
+    {
+      "id": 2,
+      "name": "arduido",
+      "emp": 1,
+      "cat": "برمجة",
+      "priority": "med",
+      "status": "done",
+      "start": "2024-03-01",
+      "end": "2024-03-10",
+      "prog": 100,
+      "note": "برمجة أردوينو"
+    },
+    {
+      "id": 3,
+      "name": "led lights",
+      "emp": 2,
+      "cat": "إلكترونيات",
+      "priority": "low",
+      "status": "pend",
+      "start": "2024-04-05",
+      "end": "2024-04-20",
+      "prog": 0,
+      "note": "تركيب إضاءة LED"
+    },
+    {
+      "id": 4,
+      "name": "resistor",
+      "emp": 3,
+      "cat": "ميكانيكا",
+      "priority": "high",
+      "status": "prog",
+      "start": "2024-04-01",
+      "end": "2024-04-10",
+      "prog": 70,
+      "note": "اختبار المقاومات"
+    },
+    {
+      "id": 5,
+      "name": "starter",
+      "emp": 3,
+      "cat": "ميكانيكا",
+      "priority": "med",
+      "status": "done",
+      "start": "2024-03-15",
+      "end": "2024-03-25",
+      "prog": 100,
+      "note": "إصلاح المشغل"
+    },
+    {
+      "id": 6,
+      "name": "motor",
+      "emp": 3,
+      "cat": "ميكانيكا",
+      "priority": "high",
+      "status": "late",
+      "start": "2024-03-01",
+      "end": "2024-03-15",
+      "prog": 30,
+      "note": "تركيب المحرك"
+    },
+    {
+      "id": 7,
+      "name": "ultra sonic sensor",
+      "emp": 3,
+      "cat": "إلكترونيات",
+      "priority": "low",
+      "status": "review",
+      "start": "2024-04-10",
+      "end": "2024-04-25",
+      "prog": 80,
+      "note": "اختبار حساس الصوت"
+    }
+  ],
+  "meetings": [],
+  "projects": [],
+  "timeLogs": [],
+  "notifications": [],
+  "activities": []
+}

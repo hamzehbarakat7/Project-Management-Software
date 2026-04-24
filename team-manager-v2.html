@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فريق برو — نظام إدارة متكامل</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* ===== THEMES ===== */
+[data-theme="dark"] {
+  --bg:#0d0f14; --surface:#141720; --surface2:#1c2030; --surface3:#232840;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+  --text:#f0f2f8; --text2:#8b90a0; --text3:#454a5c;
+  --accent:#4f7dff; --accent2:#7c5cfc; --green:#2dd4a0; --amber:#f5a623; --red:#ff5e6c; --cyan:#38c9e8;
+  --shadow:rgba(0,0,0,0.4);
+}
+[data-theme="light"] {
+  --bg:#f4f6fb; --surface:#ffffff; --surface2:#f0f3fa; --surface3:#e8ecf5;
+  --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.14);
+  --text:#1a1d2e; --text2:#6b7280; --text3:#a0a8bc;
+  --accent:#3b6ef0; --accent2:#6c47f5; --green:#1cb88a; --amber:#d4891e; --red:#e84555; --cyan:#2ab5d4;
+  --shadow:rgba(0,0,0,0.1);
+}
+[data-theme="ocean"] {
+  --bg:#071525; --surface:#0d2035; --surface2:#0f2d48; --surface3:#153a5c;
+  --border:rgba(56,180,230,0.12); --border2:rgba(56,180,230,0.22);
+  --text:#d8f0ff; --text2:#6da8cc; --text3:#3a6480;
+  --accent:#38b4e6; --accent2:#2fefc7; --green:#2fefc7; --amber:#ffc145; --red:#ff6b7a; --cyan:#38b4e6;
+  --shadow:rgba(0,0,0,0.5);
+}
+[data-theme="rose"] {
+  --bg:#1a0e14; --surface:#251218; --surface2:#301820; --surface3:#3d1f28;
+  --border:rgba(255,100,130,0.1); --border2:rgba(255,100,130,0.2);
+  --text:#fce8ee; --text2:#c07080; --text3:#7a4050;
+  --accent:#ff6482; --accent2:#ff9eb5; --green:#6fd4a0; --amber:#ffc060; --red:#ff4466; --cyan:#70d4e8;
+  --shadow:rgba(0,0,0,0.5);
+}
+[data-theme="forest"] {
+  --bg:#0b150e; --surface:#111d14; --surface2:#17271b; --surface3:#1e3224;
+  --border:rgba(80,200,100,0.1); --border2:rgba(80,200,100,0.2);
+  --text:#e0f5e5; --text2:#78a882; --text3:#456050;
+  --accent:#4ecb70; --accent2:#80e890; --green:#4ecb70; --amber:#d4c050; --red:#e86060; --cyan:#50d0c0;
+  --shadow:rgba(0,0,0,0.5);
+}
+[data-theme="sunset"] {
+  --bg:#2d1b69; --surface:#3d2b7a; --surface2:#4a3a8c; --surface3:#5a4a9e;
+  --border:rgba(255,165,0,0.12); --border2:rgba(255,165,0,0.22);
+  --text:#f5e6d3; --text2:#d4b08a; --text3:#a08560;
+  --accent:#ff8c00; --accent2:#ff4500; --green:#32cd32; --amber:#ffd700; --red:#dc143c; --cyan:#00ced1;
+  --shadow:rgba(0,0,0,0.6);
+}
+[data-theme="midnight"] {
+  --bg:#0a0a0a; --surface:#1a1a1a; --surface2:#2a2a2a; --surface3:#3a3a3a;
+  --border:rgba(255,255,255,0.05); --border2:rgba(255,255,255,0.1);
+  --text:#ffffff; --text2:#cccccc; --text3:#888888;
+  --accent:#00ffff; --accent2:#ff00ff; --green:#00ff00; --amber:#ffff00; --red:#ff0000; --cyan:#00ffff;
+  --shadow:rgba(0,0,0,0.8);
+}
+[data-theme="aurora"] {
+  --bg:#0f0f23; --surface:#1a1a2e; --surface2:#16213e; --surface3:#0f3460;
+  --border:rgba(0,255,255,0.1); --border2:rgba(0,255,255,0.2);
+  --text:#e0e0e0; --text2:#a0a0a0; --text3:#606060;
+  --accent:#00ffff; --accent2:#ff00ff; --green:#00ff00; --amber:#ffff00; --red:#ff0000; --cyan:#00ffff;
+  --shadow:rgba(0,0,0,0.7);
+}
+[data-theme="desert"] {
+  --bg:#f4e4bc; --surface:#f5deb3; --surface2:#deb887; --surface3:#d2b48c;
+  --border:rgba(139,69,19,0.1); --border2:rgba(139,69,19,0.2);
+  --text:#2f1b14; --text2:#5d4e37; --text3:#8b7355;
+  --accent:#daa520; --accent2:#b8860b; --green:#228b22; --amber:#daa520; --red:#8b0000; --cyan:#20b2aa;
+  --shadow:rgba(0,0,0,0.2);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;transition:background .3s,color .3s}
+
+/* Sidebar */
+.sidebar{width:230px;min-height:100vh;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;transition:background .3s,border .3s}
+.sidebar-logo{padding:1.25rem;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon svg{width:18px;height:18px;fill:white}
+.logo-text{font-size:15px;font-weight:800;font-family:'Cairo',sans-serif}
+.logo-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.sidebar-section{padding:.75rem 0}
+.section-label{font-size:9px;color:var(--text3);padding:4px 1.1rem 6px;letter-spacing:1.5px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 1.1rem;font-size:13px;color:var(--text2);cursor:pointer;border-right:2px solid transparent;transition:all .15s;user-select:none}
+.nav-item:hover{background:rgba(127,127,200,0.06);color:var(--text)}
+.nav-item.active{background:rgba(79,125,255,0.08);color:var(--accent);border-right-color:var(--accent)}
+[data-theme="ocean"] .nav-item.active{background:rgba(56,180,230,0.1);color:var(--accent);border-right-color:var(--accent)}
+[data-theme="rose"] .nav-item.active{background:rgba(255,100,130,0.1);color:var(--accent);border-right-color:var(--accent)}
+[data-theme="forest"] .nav-item.active{background:rgba(78,203,112,0.1);color:var(--accent);border-right-color:var(--accent)}
+.nav-item svg{width:15px;height:15px;flex-shrink:0}
+.nav-badge{margin-right:auto;background:var(--accent);color:#fff;font-size:9px;padding:1px 5px;border-radius:20px;font-weight:700}
+.sidebar-bottom{padding:1rem;border-top:1px solid var(--border);margin-top:auto}
+.theme-label{font-size:10px;color:var(--text3);margin-bottom:6px}
+.theme-pills{display:flex;gap:5px;flex-wrap:wrap}
+.theme-pill{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0}
+.theme-pill.active{border-color:var(--text);transform:scale(1.15)}
+.theme-pill[data-t="dark"]{background:linear-gradient(135deg,#0d0f14,#4f7dff)}
+.theme-pill[data-t="light"]{background:linear-gradient(135deg,#f4f6fb,#3b6ef0)}
+.theme-pill[data-t="ocean"]{background:linear-gradient(135deg,#071525,#38b4e6)}
+.theme-pill[data-t="rose"]{background:linear-gradient(135deg,#1a0e14,#ff6482)}
+.theme-pill[data-t="forest"]{background:linear-gradient(135deg,#0b150e,#4ecb70)}
+.theme-pill[data-t="sunset"]{background:linear-gradient(135deg,#2d1b69,#ff8c00)}
+.theme-pill[data-t="midnight"]{background:linear-gradient(135deg,#0a0a0a,#00ffff)}
+.theme-pill[data-t="aurora"]{background:linear-gradient(135deg,#0f0f23,#00ffff)}
+.theme-pill[data-t="desert"]{background:linear-gradient(135deg,#f4e4bc,#daa520)}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{display:flex;align-items:center;padding:.9rem 1.5rem;border-bottom:1px solid var(--border);gap:10px;background:var(--surface);position:sticky;top:0;z-index:20;transition:background .3s}
+.topbar-title{font-size:16px;font-weight:700;flex:1;font-family:'Cairo',sans-serif}
+.topbar-clock{font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums;min-width:80px;text-align:center;background:var(--surface2);padding:4px 10px;border-radius:20px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;font-size:12px;font-family:'Tajawal',sans-serif;cursor:pointer;border:none;transition:all .15s;font-weight:600}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+.btn-danger{background:rgba(255,94,108,0.12);color:var(--red);border:1px solid rgba(255,94,108,0.25)}
+.btn-danger:hover{background:rgba(255,94,108,0.2)}
+.btn-sm{padding:4px 9px;font-size:11px}
+.content{padding:1.25rem 1.5rem;flex:1}
+.section{display:none}.section.active{display:block}
+
+/* Cards & grid */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;position:relative;overflow:hidden;transition:background .3s,border .3s}
+.metric-glow{position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.07}
+.metric-label{font-size:11px;color:var(--text3);margin-bottom:5px}
+.metric-value{font-size:24px;font-weight:800;font-family:'Cairo',sans-serif;line-height:1}
+.metric-sub{font-size:10px;color:var(--text3);margin-top:4px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;transition:background .3s,border .3s}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+.card-title{font-size:13px;font-weight:700;font-family:'Cairo',sans-serif}
+.card-action{font-size:11px;color:var(--accent);cursor:pointer}
+.card-action:hover{text-decoration:underline}
+
+/* Avatar */
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-family:'Cairo',sans-serif}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+.badge.done{background:rgba(45,212,160,0.12);color:var(--green)}
+.badge.prog{background:rgba(79,125,255,0.12);color:var(--accent)}
+.badge.pend{background:rgba(245,166,35,0.12);color:var(--amber)}
+.badge.late{background:rgba(255,94,108,0.12);color:var(--red)}
+.badge.review{background:rgba(56,201,232,0.12);color:var(--cyan)}
+
+/* Progress */
+.prog-bar{height:5px;background:var(--surface3);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width .5s ease}
+
+/* Tables */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:right;font-weight:600;font-size:10px;color:var(--text3);padding:0 10px 8px;border-bottom:1px solid var(--border);letter-spacing:.5px}
+.tbl td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(127,127,200,0.03)}
+.tbl-actions{display:flex;gap:5px}
+
+/* Emp row */
+.emp-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
+.emp-row:last-child{border-bottom:none}
+
+/* Modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:1.4rem;width:460px;max-width:92vw;max-height:90vh;overflow-y:auto;transition:background .3s}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:1.1rem;font-family:'Cairo',sans-serif}
+.form-group{margin-bottom:10px}
+.form-label{font-size:11px;color:var(--text2);margin-bottom:4px;display:block;font-weight:600}
+.fi{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:8px 11px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;transition:border .15s}
+.fi:focus{border-color:var(--accent)}
+.fi option{background:var(--surface2)}
+.modal-footer{display:flex;gap:7px;justify-content:flex-end;margin-top:1.1rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Profile panel */
+.profile-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem}
+.profile-header{display:flex;align-items:center;gap:14px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.profile-name{font-size:17px;font-weight:800;font-family:'Cairo',sans-serif}
+.profile-role{font-size:12px;color:var(--text3);margin-top:2px}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.pstat{background:var(--surface2);border-radius:8px;padding:.6rem .8rem;text-align:center}
+.pstat-val{font-size:18px;font-weight:700;font-family:'Cairo',sans-serif}
+.pstat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.tab-bar{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:1rem}
+.tab{padding:7px 14px;font-size:12px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;font-weight:600}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* Meeting cards */
+.meeting-card{background:var(--surface2);border-radius:10px;padding:.9rem;margin-bottom:.7rem;border-right:3px solid var(--accent);transition:border .3s}
+.meeting-card.done-m{border-right-color:var(--green);opacity:.7}
+.meeting-card.upcoming{border-right-color:var(--amber)}
+.meeting-title{font-size:13px;font-weight:600;margin-bottom:3px;font-family:'Cairo',sans-serif}
+.meeting-meta{font-size:11px;color:var(--text3);display:flex;gap:10px;flex-wrap:wrap}
+.meeting-attendees{display:flex;gap:-4px;margin-top:6px}
+.meeting-avatar{width:22px;height:22px;border-radius:50%;border:2px solid var(--surface);font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700;margin-right:-5px}
+
+/* Timer */
+.timer-display{font-size:36px;font-weight:800;font-family:'Cairo',sans-serif;color:var(--accent);text-align:center;letter-spacing:2px;padding:1.5rem;background:var(--surface2);border-radius:12px;margin-bottom:1rem}
+.timer-controls{display:flex;gap:8px;justify-content:center;margin-bottom:1rem}
+.tracker-row{display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface2);border-radius:8px;margin-bottom:6px;font-size:12px}
+
+/* Gantt */
+.gantt-header{display:flex;margin-right:120px;margin-bottom:4px}
+.gantt-month{flex:1;font-size:10px;color:var(--text3);text-align:center;padding:3px}
+.gantt-row-wrap{display:flex;align-items:center;border-bottom:1px solid var(--border);padding:4px 0}
+.gantt-row-wrap:last-child{border-bottom:none}
+.gantt-name{width:120px;font-size:11px;color:var(--text2);flex-shrink:0}
+.gantt-track{flex:1;position:relative;height:26px}
+.gantt-bar{position:absolute;height:18px;top:4px;border-radius:5px;font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;padding:0 6px;white-space:nowrap;overflow:hidden}
+.gantt-today{position:absolute;top:0;bottom:0;width:1px;background:var(--red);opacity:.6}
+
+/* Activity */
+.act-item{display:flex;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:flex-start}
+.act-item:last-child{border-bottom:none}
+.act-dot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.act-time{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* Priority dot */
+.pdot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+.pdot.high{background:var(--red)}.pdot.med{background:var(--amber)}.pdot.low{background:var(--green)}
+
+/* Notif */
+.notif-item{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:7px;transition:border .3s}
+
+/* Search */
+.search-box{position:relative;flex:1;max-width:220px}
+.search-box input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:6px 30px 6px 12px;color:var(--text);font-size:12px;font-family:'Tajawal',sans-serif;outline:none}
+.search-box input:focus{border-color:var(--accent)}
+.search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--text3)}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px 18px;font-size:12px;font-weight:600;z-index:999;transition:transform .3s;box-shadow:0 4px 20px var(--shadow)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:var(--green);color:var(--green)}
+.toast.error{border-color:var(--red);color:var(--red)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:4px}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.section.active{animation:fadeIn .2s ease}
+
+/* Responsive */
+@media(max-width:860px){
+  .sidebar{width:48px}
+  .logo-text,.logo-sub,.nav-item span,.section-label,.theme-label,.theme-pills,.nav-badge,.sidebar-bottom .btn{display:none}
+  .nav-item{justify-content:center;padding:10px}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .two-col,.three-col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-row">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="logo-text">فريق برو</div>
+        <div class="logo-sub">نظام إدارة متكامل</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="section-label">الرئيسية</div>
+    <div class="nav-item active" onclick="nav('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span>لوحة التحكم</span>
+    </div>
+    <div class="nav-item" onclick="nav('tasks',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      <span>المهام</span>
+      <span class="nav-badge" id="nb-tasks">0</span>
+    </div>
+    <div class="nav-item" onclick="nav('meetings',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>الاجتماعات</span>
+      <span class="nav-badge" id="nb-mtg">0</span>
+    </div>
+    <div class="nav-item" onclick="nav('team',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      <span>الفريق</span>
+    </div>
+    <div class="section-label">الإنتاجية</div>
+    <div class="nav-item" onclick="nav('chat',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span>الدردشة</span>
+      <span class="nav-badge" id="nb-chat">0</span>
+    </div>
+    <div class="nav-item" onclick="nav('tracker',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>تتبع الوقت</span>
+    </div>
+    <div class="nav-item" onclick="nav('gantt',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>الجدول الزمني</span>
+    </div>
+    <div class="nav-item" onclick="nav('reports',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>التقارير</span>
+    </div>
+    <div class="nav-item" onclick="nav('notifs',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span>الإشعارات</span>
+      <span class="nav-badge" id="nb-notif">0</span>
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="theme-label">الثيم</div>
+    <div class="theme-pills">
+      <div class="theme-pill active" data-t="dark" onclick="setTheme('dark',this)" title="داكن"></div>
+      <div class="theme-pill" data-t="light" onclick="setTheme('light',this)" title="فاتح"></div>
+      <div class="theme-pill" data-t="ocean" onclick="setTheme('ocean',this)" title="المحيط"></div>
+      <div class="theme-pill" data-t="rose" onclick="setTheme('rose',this)" title="وردي"></div>
+      <div class="theme-pill" data-t="forest" onclick="setTheme('forest',this)" title="غابة"></div>
+      <div class="theme-pill" data-t="sunset" onclick="setTheme('sunset',this)" title="غروب"></div>
+      <div class="theme-pill" data-t="midnight" onclick="setTheme('midnight',this)" title="منتصف الليل"></div>
+      <div class="theme-pill" data-t="aurora" onclick="setTheme('aurora',this)" title="أورورا"></div>
+      <div class="theme-pill" data-t="desert" onclick="setTheme('desert',this)" title="صحراء"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">لوحة التحكم</div>
+    <div class="search-box" style="margin-right:auto;max-width:250px">
+      <input id="global-search" placeholder="بحث عام..." oninput="globalSearch(this.value)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="topbar-clock" id="clock">00:00:00</div>
+    <button class="btn btn-ghost btn-sm" onclick="openModal('addTask')">+ مهمة</button>
+    <button class="btn btn-primary btn-sm" onclick="openModal('addEmp')">+ موظف</button>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="sec-dashboard">
+      <div class="metrics" id="metrics-row"></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">إنجاز الفريق</div><span class="card-action" onclick="nav('team',document.querySelector('.nav-item:nth-child(4)'))">عرض الكل</span></div>
+          <div id="team-prog"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">توزيع المهام</div></div>
+          <div style="position:relative;height:190px"><canvas id="c-donut" role="img" aria-label="توزيع المهام حسب الحالة"></canvas></div>
+          <div id="donut-leg" style="margin-top:10px"></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">آخر النشاطات</div></div>
+          <div id="activity-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">اجتماعات اليوم</div></div>
+          <div id="today-meetings"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="section" id="sec-tasks">
+      <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+        <select class="fi" style="width:130px" onchange="fStatus=this.value;renderTasks()">
+          <option value="all">كل الحالات</option>
+          <option value="done">مكتملة</option>
+          <option value="prog">جاري</option>
+          <option value="pend">معلقة</option>
+          <option value="late">متأخرة</option>
+          <option value="review">مراجعة</option>
+        </select>
+        <select class="fi" style="width:130px" id="emp-filter" onchange="fEmp=this.value;renderTasks()">
+          <option value="all">كل الموظفين</option>
+        </select>
+        <select class="fi" style="width:110px" onchange="fPriority=this.value;renderTasks()">
+          <option value="all">كل الأولويات</option>
+          <option value="high">عالية</option>
+          <option value="med">متوسطة</option>
+          <option value="low">منخفضة</option>
+        </select>
+        <div class="search-box">
+          <input placeholder="بحث..." oninput="fSearch=this.value;renderTasks()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('addTask')" style="margin-right:auto">+ مهمة جديدة</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportTasksToCSV()">تصدير CSV</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="tbl"><thead><tr>
+          <th>المهمة</th><th>المسؤول</th><th>الفئة</th><th>الأولوية</th><th>الحالة</th><th>الموعد</th><th>التقدم</th><th>إجراء</th>
+        </tr></thead><tbody id="tasks-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- MEETINGS -->
+    <div class="section" id="sec-meetings">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" id="mtg-filter-all" onclick="fMtg='all';renderMeetings();activeMtgBtn(this)">الكل</button>
+          <button class="btn btn-ghost btn-sm" onclick="fMtg='upcoming';renderMeetings();activeMtgBtn(this)">قادمة</button>
+          <button class="btn btn-ghost btn-sm" onclick="fMtg='done';renderMeetings();activeMtgBtn(this)">منتهية</button>
+          <button class="btn btn-ghost btn-sm" onclick="showCalendar()">📅 تقويم</button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('addMeeting')">+ اجتماع جديد</button>
+      </div>
+      <div id="calendar-view" style="display:none;margin-bottom:1rem;border:1px solid var(--border);border-radius:8px;padding:1rem;background:var(--surface)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <button onclick="prevMonth()">←</button>
+          <span id="calendar-title"></span>
+          <button onclick="nextMonth()">→</button>
+        </div>
+        <div id="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div>
+      </div>
+      <div class="two-col">
+        <div id="meetings-list"></div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:.9rem">إحصائيات الاجتماعات</div>
+          <div style="position:relative;height:200px"><canvas id="c-mtg" role="img" aria-label="إحصائيات الاجتماعات"></canvas></div>
+          <div id="mtg-stats" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM -->
+    <div class="section" id="sec-team">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div class="search-box" style="max-width:200px">
+          <input placeholder="بحث عن موظف..." oninput="fTeamSearch=this.value;renderTeamGrid()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('addEmp')">+ إضافة موظف</button>
+      </div>
+      <div class="three-col" id="team-grid"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="section" id="sec-profile">
+      <button class="btn btn-ghost btn-sm" onclick="nav('team',null)" style="margin-bottom:1rem">← رجوع للفريق</button>
+      <div id="profile-content"></div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="section" id="sec-chat">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div class="card-title">دردشة الفريق</div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('addMessage')">+ رسالة جديدة</button>
+      </div>
+      <div class="two-col">
+        <div class="card" style="height:400px;overflow-y:auto" id="chat-messages"></div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:.9rem">أعضاء الدردشة</div>
+          <div id="chat-members"></div>
+        </div>
+      </div>
+    </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:1rem">تتبع الوقت</div>
+          <div class="timer-display" id="timer-display">00:00:00</div>
+          <div class="form-group">
+            <label class="form-label">المهمة المرتبطة</label>
+            <select class="fi" id="timer-task-sel"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">الموظف</label>
+            <select class="fi" id="timer-emp-sel"></select>
+          </div>
+          <div class="timer-controls">
+            <button class="btn btn-primary" id="timer-start" onclick="timerToggle()">▶ ابدأ</button>
+            <button class="btn btn-ghost" onclick="timerReset()">↺ إعادة</button>
+            <button class="btn btn-ghost" onclick="timerLog()">حفظ السجل</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:1rem">سجل الوقت</div>
+          <div id="time-log-list"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:0">
+        <div class="card-header"><div class="card-title">ملخص الوقت حسب الموظف</div></div>
+        <div style="position:relative;height:220px"><canvas id="c-time" role="img" aria-label="ملخص الوقت حسب الموظف"></canvas></div>
+      </div>
+    </div>
+
+    <!-- GANTT -->
+    <div class="section" id="sec-gantt">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">الجدول الزمني للمشاريع</div>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('addProject')">+ مشروع</button>
+        </div>
+        <div id="gantt-container"></div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="section" id="sec-reports">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div style="font-size:13px;font-weight:600">التقارير والإحصائيات</div>
+        <button class="btn btn-primary btn-sm" onclick="exportReportToPDF()">تصدير PDF</button>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">أداء الفريق الشهري</div></div>
+          <div style="position:relative;height:220px"><canvas id="c-line" role="img" aria-label="أداء الفريق الشهري"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">إنجاز الموظفين</div></div>
+          <div style="position:relative;height:220px"><canvas id="c-bar" role="img" aria-label="إنجاز الموظفين"></canvas></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">نسبة الإنجاز الكلية</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem">
+            <div style="font-size:52px;font-weight:800;font-family:'Cairo',sans-serif;color:var(--green)" id="big-pct">0%</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:12px">إنجاز إجمالي</div>
+            <div class="prog-bar" style="width:100%;height:10px"><div class="prog-fill" id="big-prog" style="background:var(--green);width:0%"></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">المهام حسب الفئة</div></div>
+          <div style="position:relative;height:200px"><canvas id="c-cat" role="img" aria-label="المهام حسب الفئة"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFS -->
+    <div class="section" id="sec-notifs">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div style="font-size:13px;font-weight:600">مركز الإشعارات</div>
+        <button class="btn btn-ghost btn-sm" onclick="clearNotifs()">مسح الكل</button>
+      </div>
+      <div id="notif-list" style="max-width:680px"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modals -->
+<!-- Add Task Modal -->
+<div class="overlay" id="modal-addTask" onclick="closeOverlay(event,'modal-addTask')">
+  <div class="modal">
+    <div class="modal-title">إضافة مهمة جديدة</div>
+    <div class="form-group"><label class="form-label">اسم المهمة *</label><input class="fi" id="at-name" placeholder="أدخل اسم المهمة..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">المسؤول</label><select class="fi" id="at-emp"></select></div>
+      <div class="form-group"><label class="form-label">الفئة</label><select class="fi" id="at-cat"><option>تطوير</option><option>تصميم</option><option>تسويق</option><option>إدارة</option><option>دعم</option><option>اختبار</option><option>إلكترونيات</option><option>برمجة</option><option>ميكانيكا</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">الأولوية</label><select class="fi" id="at-pri"><option value="high">عالية</option><option value="med">متوسطة</option><option value="low">منخفضة</option></select></div>
+      <div class="form-group"><label class="form-label">الحالة</label><select class="fi" id="at-status"><option value="pend">معلقة</option><option value="prog">قيد التنفيذ</option><option value="review">مراجعة</option><option value="done">مكتملة</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">تاريخ البدء</label><input class="fi" type="date" id="at-start"></div>
+      <div class="form-group"><label class="form-label">تاريخ الانتهاء</label><input class="fi" type="date" id="at-end"></div>
+    </div>
+    <div class="form-group"><label class="form-label">التقدم %</label><input class="fi" type="number" id="at-prog" min="0" max="100" value="0"></div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><textarea class="fi" id="at-note" rows="2" placeholder="ملاحظات اختيارية..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-addTask')">إلغاء</button><button class="btn btn-primary" onclick="addTask()">إضافة</button></div>
+  </div>
+</div>
+
+<!-- Add Employee Modal -->
+<div class="overlay" id="modal-addEmp" onclick="closeOverlay(event,'modal-addEmp')">
+  <div class="modal">
+    <div class="modal-title">إضافة موظف جديد</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">الاسم *</label><input class="fi" id="ae-name" placeholder="الاسم الكامل"></div>
+      <div class="form-group"><label class="form-label">المسمى الوظيفي *</label><input class="fi" id="ae-role" placeholder="مطور واجهات..."></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">البريد الإلكتروني</label><input class="fi" id="ae-email" placeholder="name@company.com"></div>
+      <div class="form-group"><label class="form-label">رقم الهاتف</label><input class="fi" id="ae-phone" placeholder="+966..."></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">القسم</label><select class="fi" id="ae-dept"><option>التقنية</option><option>التصميم</option><option>التسويق</option><option>الإدارة</option><option>المبيعات</option><option>الدعم</option></select></div>
+      <div class="form-group"><label class="form-label">لون الأفاتار</label><select class="fi" id="ae-color">
+        <option value="blue">أزرق</option><option value="green">أخضر</option><option value="purple">بنفسجي</option><option value="amber">عنبري</option><option value="cyan">سماوي</option><option value="red">أحمر</option>
+      </select></div>
+    </div>
+    <div class="form-group"><label class="form-label">تاريخ الانضمام</label><input class="fi" type="date" id="ae-join"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-addEmp')">إلغاء</button><button class="btn btn-primary" onclick="addEmployee()">إضافة الموظف</button></div>
+  </div>
+</div>
+
+<!-- Add Meeting Modal -->
+<div class="overlay" id="modal-addMeeting" onclick="closeOverlay(event,'modal-addMeeting')">
+  <div class="modal">
+    <div class="modal-title">جدولة اجتماع</div>
+    <div class="form-group"><label class="form-label">عنوان الاجتماع *</label><input class="fi" id="am-title" placeholder="عنوان الاجتماع..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">التاريخ</label><input class="fi" type="date" id="am-date"></div>
+      <div class="form-group"><label class="form-label">الوقت</label><input class="fi" type="time" id="am-time" value="10:00"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">المدة</label><select class="fi" id="am-dur"><option value="30">30 دقيقة</option><option value="60" selected>ساعة</option><option value="90">ساعة ونص</option><option value="120">ساعتان</option></select></div>
+      <div class="form-group"><label class="form-label">النوع</label><select class="fi" id="am-type"><option>دوري</option><option>طارئ</option><option>تخطيط</option><option>مراجعة</option><option>تدريب</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">الحضور (متعدد)</label><select class="fi" id="am-attendees" multiple style="height:90px"></select></div>
+    <div class="form-group"><label class="form-label">الأجندة / الوصف</label><textarea class="fi" id="am-desc" rows="2" placeholder="ما الذي سيُناقش؟"></textarea></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-addMeeting')">إلغاء</button><button class="btn btn-primary" onclick="addMeeting()">جدولة</button></div>
+  </div>
+</div>
+
+<!-- Add Message Modal -->
+<div class="overlay" id="modal-addMessage" onclick="closeOverlay(event,'modal-addMessage')">
+  <div class="modal">
+    <div class="modal-title">إرسال رسالة</div>
+    <div class="form-group"><label class="form-label">من *</label><select class="fi" id="msg-from">${employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">الرسالة *</label><textarea class="fi" id="msg-text" rows="3" placeholder="اكتب رسالتك..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-addMessage')">إلغاء</button><button class="btn btn-primary" onclick="addMessage()">إرسال</button></div>
+  </div>
+</div>
+
+<!-- Edit Task Modal -->
+<div class="overlay" id="modal-editTask" onclick="closeOverlay(event,'modal-editTask')">
+  <div class="modal">
+    <div class="modal-title">تعديل المهمة</div>
+    <input type="hidden" id="et-id">
+    <div class="form-group"><label class="form-label">اسم المهمة</label><input class="fi" id="et-name"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">المسؤول</label><select class="fi" id="et-emp"></select></div>
+      <div class="form-group"><label class="form-label">الفئة</label><select class="fi" id="et-cat"><option>تطوير</option><option>تصميم</option><option>تسويق</option><option>إدارة</option><option>دعم</option><option>اختبار</option><option>إلكترونيات</option><option>برمجة</option><option>ميكانيكا</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">الأولوية</label><select class="fi" id="et-pri"><option value="high">عالية</option><option value="med">متوسطة</option><option value="low">منخفضة</option></select></div>
+      <div class="form-group"><label class="form-label">الحالة</label><select class="fi" id="et-status"><option value="pend">معلقة</option><option value="prog">قيد التنفيذ</option><option value="review">مراجعة</option><option value="done">مكتملة</option><option value="late">متأخرة</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">التقدم %</label><input class="fi" type="number" id="et-prog" min="0" max="100"></div>
+    <div class="form-group"><label class="form-label">تاريخ الانتهاء</label><input class="fi" type="date" id="et-end"></div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><textarea class="fi" id="et-note" rows="2"></textarea></div>
+    <div class="form-group"><label class="form-label">تعليقات إضافية</label><textarea class="fi" id="et-comments" rows="2" placeholder="تعليقات..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-editTask')">إلغاء</button><button class="btn btn-primary" onclick="saveEditTask()">حفظ</button></div>
+  </div>
+</div>
+
+<!-- Add Project Modal -->
+<div class="overlay" id="modal-addProject" onclick="closeOverlay(event,'modal-addProject')">
+  <div class="modal">
+    <div class="modal-title">إضافة مشروع للجدول الزمني</div>
+    <div class="form-group"><label class="form-label">اسم المشروع *</label><input class="fi" id="ap-name" placeholder="اسم المشروع..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">الشهر (بداية)</label><select class="fi" id="ap-start"><option value="0">يناير</option><option value="1">فبراير</option><option value="2">مارس</option><option value="3">أبريل</option><option value="4">مايو</option><option value="5">يونيو</option><option value="6">يوليو</option><option value="7">أغسطس</option></select></div>
+      <div class="form-group"><label class="form-label">المدة (أشهر)</label><select class="fi" id="ap-len"><option value="1">شهر</option><option value="2">2 أشهر</option><option value="3">3 أشهر</option><option value="4">4 أشهر</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">اللون</label><select class="fi" id="ap-color"><option value="#4f7dff">أزرق</option><option value="#2dd4a0">أخضر</option><option value="#7c5cfc">بنفسجي</option><option value="#f5a623">عنبري</option><option value="#ff5e6c">أحمر</option><option value="#38c9e8">سماوي</option></select></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-addProject')">إلغاء</button><button class="btn btn-primary" onclick="addProject()">إضافة</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ DATA ============
+const COLORS = {
+  blue:{bg:'rgba(79,125,255,0.15)',text:'#4f7dff'},
+  green:{bg:'rgba(45,212,160,0.15)',text:'#2dd4a0'},
+  purple:{bg:'rgba(124,92,252,0.15)',text:'#7c5cfc'},
+  amber:{bg:'rgba(245,166,35,0.15)',text:'#f5a623'},
+  cyan:{bg:'rgba(56,201,232,0.15)',text:'#38c9e8'},
+  red:{bg:'rgba(255,94,108,0.15)',text:'#ff5e6c'}
+};
+
+let employees = [
+  {
+    "id": 1,
+    "name": "saif",
+    "role": "مهندس إلكترونيات",
+    "dept": "تقنية",
+    "email": "saif@company.com",
+    "phone": "+966501234567",
+    "color": "blue",
+    "join": "2024-01-01",
+    "notes": "متخصص في الإلكترونيات والأردوينو",
+    "rating": 4
+  },
+  {
+    "id": 2,
+    "name": "muhmad",
+    "role": "مهندس إلكترونيات",
+    "dept": "تقنية",
+    "email": "muhmad@company.com",
+    "phone": "+966502345678",
+    "color": "green",
+    "join": "2024-01-01",
+    "notes": "متخصص في الإضاءة والإلكترونيات",
+    "rating": 5
+  },
+  {
+    "id": 3,
+    "name": "abood",
+    "role": "مهندس ميكانيكي",
+    "dept": "تقنية",
+    "email": "abood@company.com",
+    "phone": "+966503456789",
+    "color": "purple",
+    "join": "2024-01-01",
+    "notes": "متخصص في المحركات والحساسات",
+    "rating": 3
+  },
+  {
+    "id": 4,
+    "name": "حمزة",
+    "role": "مبرمج",
+    "dept": "تقنية",
+    "email": "hamza@company.com",
+    "phone": "+966504567890",
+    "color": "amber",
+    "join": "2024-01-01",
+    "notes": "مطور برمجيات",
+    "rating": 5
+  },
+  {
+    "id": 5,
+    "name": "محمد",
+    "role": "مبرمج",
+    "dept": "تقنية",
+    "email": "mohammed2@company.com",
+    "phone": "+966505678901",
+    "color": "cyan",
+    "join": "2024-01-01",
+    "notes": "مطور ويب",
+    "rating": 4
+  }
+];
+let tasks = [
+  {
+    "id": 1,
+    "name": "sun plats",
+    "emp": 1,
+    "cat": "إلكترونيات",
+    "priority": "high",
+    "status": "prog",
+    "start": "2024-04-01",
+    "end": "2024-04-15",
+    "prog": 50,
+    "note": "تصميم لوحات شمسية"
+  },
+  {
+    "id": 2,
+    "name": "arduido",
+    "emp": 1,
+    "cat": "برمجة",
+    "priority": "med",
+    "status": "done",
+    "start": "2024-03-01",
+    "end": "2024-03-10",
+    "prog": 100,
+    "note": "برمجة أردوينو"
+  },
+  {
+    "id": 3,
+    "name": "led lights",
+    "emp": 2,
+    "cat": "إلكترونيات",
+    "priority": "low",
+    "status": "pend",
+    "start": "2024-04-05",
+    "end": "2024-04-20",
+    "prog": 0,
+    "note": "تركيب إضاءة LED"
+  },
+  {
+    "id": 4,
+    "name": "resistor",
+    "emp": 3,
+    "cat": "ميكانيكا",
+    "priority": "high",
+    "status": "prog",
+    "start": "2024-04-01",
+    "end": "2024-04-10",
+    "prog": 70,
+    "note": "اختبار المقاومات"
+  },
+  {
+    "id": 5,
+    "name": "starter",
+    "emp": 3,
+    "cat": "ميكانيكا",
+    "priority": "med",
+    "status": "done",
+    "start": "2024-03-15",
+    "end": "2024-03-25",
+    "prog": 100,
+    "note": "إصلاح المشغل"
+  },
+  {
+    "id": 6,
+    "name": "motor",
+    "emp": 3,
+    "cat": "ميكانيكا",
+    "priority": "high",
+    "status": "late",
+    "start": "2024-03-01",
+    "end": "2024-03-15",
+    "prog": 30,
+    "note": "تركيب المحرك"
+  },
+  {
+    "id": 8,
+    "name": "تطوير واجهة الموقع",
+    "emp": 4,
+    "cat": "تطوير",
+    "priority": "high",
+    "status": "prog",
+    "start": "2024-04-01",
+    "end": "2024-05-01",
+    "prog": 60,
+    "note": "تصميم وتطوير الواجهة الأمامية"
+  },
+  {
+    "id": 9,
+    "name": "برمجة خلفية الموقع",
+    "emp": 5,
+    "cat": "تطوير",
+    "priority": "high",
+    "status": "prog",
+    "start": "2024-04-05",
+    "end": "2024-05-15",
+    "prog": 40,
+    "note": "تطوير API والخادم"
+  },
+  {
+    "id": 10,
+    "name": "تصميم نظام السيارة",
+    "emp": 4,
+    "cat": "تصميم",
+    "priority": "med",
+    "status": "done",
+    "start": "2024-03-01",
+    "end": "2024-03-20",
+    "prog": 100,
+    "note": "تصميم النظام الكهربائي للسيارة"
+  },
+  {
+    "id": 11,
+    "name": "اختبار الموقع",
+    "emp": 5,
+    "cat": "اختبار",
+    "priority": "low",
+    "status": "pend",
+    "start": "2024-05-01",
+    "end": "2024-05-10",
+    "prog": 0,
+    "note": "اختبار الوظائف والأداء"
+  }
+];
+let meetings = [];
+let messages = [
+  {id:1,from:1,text:'مرحبا الجميع، كيف حال المهام؟',time:new Date().toISOString()},
+  {id:2,from:2,text:'جيد، أنا أعمل على الإضاءة',time:new Date().toISOString()},
+  {id:3,from:3,text:'أحتاج مساعدة في الحساسات',time:new Date().toISOString()}
+];
+let projects = [
+  {id:1,name:'مشروع السيارة',start:0,len:4,color:'#4f7dff'},
+  {id:2,name:'مشروع الموقع',start:1,len:3,color:'#2dd4a0'}
+];
+let timeLogs = [];
+let notifications = [];
+let activities = [];
+
+// ============ STATE ============
+let nextEmpId = 6, nextTaskId = 12, nextMtgId = 1, nextProjId = 3, nextLogId = 1, nextNotifId = 1, nextMsgId = 4;
+let fStatus='all', fEmp='all', fPriority='all', fSearch='', fMtg='all', fTeamSearch='';
+let timerInterval=null, timerSecs=0, timerRunning=false;
+let activeCharts={};
+const titles = {dashboard:'لوحة التحكم',tasks:'إدارة المهام',meetings:'الاجتماعات',team:'الفريق',profile:'ملف الموظف',tracker:'تتبع الوقت',gantt:'الجدول الزمني',reports:'التقارير',notifs:'الإشعارات',chat:'الدردشة'};
+
+// ============ UTILS ============
+const getEmp = id => employees.find(e=>e.id===id)||{name:'غير محدد',color:'blue',initials:'؟'};
+const initials = name => name.split(' ').slice(0,2).map(w=>w[0]).join('');
+const clr = (c,k) => (COLORS[c]||COLORS.blue)[k];
+const statusLabel = s => ({done:'مكتملة',prog:'قيد التنفيذ',pend:'معلقة',late:'متأخرة',review:'مراجعة'}[s]||s);
+const prioLabel = p => ({high:'عالية',med:'متوسطة',low:'منخفضة'}[p]||p);
+const empPct = id => { const m=tasks.filter(t=>t.emp===id); return m.length?Math.round(m.filter(t=>t.status==='done').length/m.length*100):0; };
+const fmtTime = s => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; return [h,m,sec].map(x=>String(x).padStart(2,'0')).join(':'); };
+const fmtDur = s => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); return h?`${h}س ${m}د`:`${m}د`; };
+function toast(msg,type='success'){const el=document.getElementById('toast');el.textContent=msg;el.className=`toast ${type} show`;setTimeout(()=>el.classList.remove('show'),2800)}
+function setVal(id,v){const el=document.getElementById(id);if(el)el.value=v;}
+function getVal(id){return document.getElementById(id)?.value||'';}
+
+// ============ CLOCK ============
+setInterval(()=>{
+  document.getElementById('clock').textContent=new Date().toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+},1000);
+
+// ============ THEME ============
+function setTheme(t,el){
+  document.body.setAttribute('data-theme',t);
+  document.querySelectorAll('.theme-pill').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  Object.values(activeCharts).forEach(c=>{try{c.destroy()}catch(e){}});
+  activeCharts={};
+  setTimeout(renderAllCharts,50);
+}
+
+// ============ NAV ============
+function nav(name,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('page-title').textContent=titles[name]||name;
+  if(name==='reports'||name==='dashboard') setTimeout(renderAllCharts,100);
+  if(name==='tracker') {populateTimerSelects();renderTimeLogs();renderTimeChart();}
+  if(name==='gantt') renderGantt();
+  if(name==='meetings') renderMeetings();
+  if(name==='team') renderTeamGrid();
+  if(name==='chat') renderChat();
+}
+
+// ============ METRICS ============
+function updateMetrics(){
+  const total=tasks.length,done=tasks.filter(t=>t.status==='done').length,
+    prog=tasks.filter(t=>t.status==='prog').length,late=tasks.filter(t=>t.status==='late').length,
+    review=tasks.filter(t=>t.status==='review').length,pct=total?Math.round(done/total*100):0;
+  document.getElementById('metrics-row').innerHTML=`
+    <div class="metric-card"><div class="metric-glow" style="background:var(--accent)"></div><div class="metric-label">إجمالي المهام</div><div class="metric-value" style="color:var(--accent)">${total}</div><div class="metric-sub">${employees.length} موظف</div></div>
+    <div class="metric-card"><div class="metric-glow" style="background:var(--green)"></div><div class="metric-label">مكتملة</div><div class="metric-value" style="color:var(--green)">${done}</div><div class="metric-sub">${pct}% إنجاز</div></div>
+    <div class="metric-card"><div class="metric-glow" style="background:var(--amber)"></div><div class="metric-label">قيد التنفيذ / مراجعة</div><div class="metric-value" style="color:var(--amber)">${prog+review}</div><div class="metric-sub">نشطة الآن</div></div>
+    <div class="metric-card"><div class="metric-glow" style="background:var(--red)"></div><div class="metric-label">متأخرة</div><div class="metric-value" style="color:var(--red)">${late}</div><div class="metric-sub">تحتاج اهتماماً</div></div>`;
+  document.getElementById('big-pct').textContent=pct+'%';
+  document.getElementById('big-prog').style.width=pct+'%';
+  document.getElementById('nb-tasks').textContent=tasks.filter(t=>t.status==='pend'||t.status==='late').length;
+  document.getElementById('nb-mtg').textContent=meetings.filter(m=>m.status==='upcoming').length;
+  document.getElementById('nb-notif').textContent=notifications.length;
+}
+
+// ============ TEAM PROGRESS (dashboard) ============
+function renderTeamProg(){
+  document.getElementById('team-prog').innerHTML=employees.map(emp=>{
+    const pct=empPct(emp.id);
+    return `<div class="emp-row">
+      <div class="avatar" style="width:32px;height:32px;font-size:11px;background:${clr(emp.color,'bg')};color:${clr(emp.color,'text')}">${initials(emp.name)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:600">${emp.name}</div>
+        <div style="font-size:10px;color:var(--text3)">${emp.role}</div>
+      </div>
+      <div style="flex:1.2"><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${clr(emp.color,'text')}"></div></div></div>
+      <div style="font-size:12px;font-weight:700;color:${clr(emp.color,'text')};min-width:34px;text-align:left">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+// ============ ACTIVITY ============
+function renderActivity(){
+  document.getElementById('activity-list').innerHTML=activities.slice(0,5).map(a=>`
+    <div class="act-item"><div class="act-dot" style="background:${a.color}"></div><div><div>${a.text}</div><div class="act-time">${a.time}</div></div></div>`).join('');
+}
+
+// ============ TODAY MEETINGS ============
+function renderTodayMeetings(){
+  const today = meetings.slice(0,3);
+  document.getElementById('today-meetings').innerHTML = today.length ? today.map(m=>{
+    const ats=m.attendees.map(id=>getEmp(id));
+    return `<div class="meeting-card ${m.status==='done'?'done-m':m.status==='upcoming'?'upcoming':''}">
+      <div class="meeting-title">${m.title}</div>
+      <div class="meeting-meta"><span>📅 ${m.date}</span><span>🕐 ${m.time}</span><span>⏱ ${m.duration}د</span><span>${m.type}</span></div>
+      <div class="meeting-attendees">${ats.slice(0,4).map(e=>`<div class="meeting-avatar" style="background:${clr(e.color||'blue','bg')};color:${clr(e.color||'blue','text')}">${initials(e.name||'؟')}</div>`).join('')}</div>
+    </div>`;
+  }).join('') : '<div style="color:var(--text3);font-size:12px;padding:1rem;text-align:center">لا توجد اجتماعات اليوم</div>';
+}
+
+// ============ TASKS ============
+function renderTasks(){
+  let filtered=tasks.filter(t=>{
+    if(fStatus!=='all'&&t.status!==fStatus)return false;
+    if(fEmp!=='all'&&t.emp!==parseInt(fEmp))return false;
+    if(fPriority!=='all'&&t.priority!==fPriority)return false;
+    if(fSearch&&!t.name.includes(fSearch))return false;
+    return true;
+  });
+  document.getElementById('tasks-tbody').innerHTML=filtered.map(t=>{
+    const emp=getEmp(t.emp);
+    return `<tr>
+      <td style="font-weight:600;max-width:200px">${t.name}<div style="font-size:10px;color:var(--text3)">${t.note||''}</div></td>
+      <td><div style="display:flex;align-items:center;gap:5px"><div class="avatar" style="width:24px;height:24px;font-size:9px;background:${clr(emp.color,'bg')};color:${clr(emp.color,'text')}">${initials(emp.name)}</div><span style="font-size:11px">${emp.name}</span></div></td>
+      <td style="font-size:11px;color:var(--text2)">${t.cat}</td>
+      <td><span class="pdot ${t.priority}"></span> <span style="font-size:11px">${prioLabel(t.priority)}</span></td>
+      <td><span class="badge ${t.status}">${statusLabel(t.status)}</span></td>
+      <td style="font-size:11px;color:var(--text3)">${t.end||'—'}</td>
+      <td style="min-width:80px"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">${t.prog}%</div><div class="prog-bar"><div class="prog-fill" style="width:${t.prog}%;background:${t.status==='done'?'var(--green)':t.status==='late'?'var(--red)':'var(--accent)'}"></div></div></td>
+      <td><div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="openEditTask(${t.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteTask(${t.id})">🗑</button></div></td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:2rem">لا توجد مهام مطابقة</td></tr>`;
+  updateMetrics();renderTeamProg();
+}
+
+function checkLateTasks() {
+  const today = new Date().toISOString().split('T')[0];
+  tasks.forEach(t => {
+    if (t.end && t.end < today && t.status !== 'done' && t.status !== 'late') {
+      t.status = 'late';
+      notifications.unshift({
+        id: nextNotifId++,
+        type: 'late',
+        icon: '⏰',
+        title: 'مهمة متأخرة',
+        text: `المهمة "${t.name}" متأخرة`,
+        time: 'الآن'
+      });
+    }
+  });
+  updateMetrics();
+  renderTasks();
+  renderNotifs();
+}
+
+function globalSearch(query) {
+  if (!query.trim()) {
+    renderTasks();
+    renderTeamGrid();
+    renderMeetings();
+    return;
+  }
+  // بحث في المهام
+  const filteredTasks = tasks.filter(t => t.name.includes(query) || getEmp(t.emp).name.includes(query) || t.cat.includes(query));
+  document.getElementById('tasks-tbody').innerHTML = filteredTasks.map(t => {
+    const emp = getEmp(t.emp);
+    return `<tr>
+      <td style="font-weight:600;max-width:200px">${t.name}<div style="font-size:10px;color:var(--text3)">${t.note || ''}</div></td>
+      <td><div style="display:flex;align-items:center;gap:5px"><div class="avatar" style="width:24px;height:24px;font-size:9px;background:${clr(emp.color, 'bg')};color:${clr(emp.color, 'text')}">${initials(emp.name)}</div><span style="font-size:11px">${emp.name}</span></div></td>
+      <td style="font-size:11px;color:var(--text2)">${t.cat}</td>
+      <td><span class="pdot ${t.priority}"></span> <span style="font-size:11px">${prioLabel(t.priority)}</span></td>
+      <td><span class="badge ${t.status}">${statusLabel(t.status)}</span></td>
+      <td style="font-size:11px;color:var(--text3)">${t.end || '—'}</td>
+      <td style="min-width:80px"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">${t.prog}%</div><div class="prog-bar"><div class="prog-fill" style="width:${t.prog}%;background:${t.status === 'done' ? 'var(--green)' : t.status === 'late' ? 'var(--red)' : 'var(--accent)'}"></div></div></td>
+      <td><div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="openEditTask(${t.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteTask(${t.id})">🗑</button></div></td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:2rem">لا توجد مهام مطابقة</td></tr>`;
+}
+
+function openEditTask(id){
+  const t=tasks.find(t=>t.id===id); if(!t)return;
+  setVal('et-id',t.id);setVal('et-name',t.name);setVal('et-cat',t.cat);
+  setVal('et-pri',t.priority);setVal('et-status',t.status);setVal('et-prog',t.prog);
+  setVal('et-end',t.end);setVal('et-note',t.note||'');setVal('et-comments',t.comments||'');
+  populateSelect('et-emp',t.emp);
+  openModal('editTask');
+}
+
+function saveEditTask(){
+  const id=parseInt(getVal('et-id')),t=tasks.find(t=>t.id===id);if(!t)return;
+  t.name=getVal('et-name');t.emp=parseInt(getVal('et-emp'));t.cat=getVal('et-cat');
+  t.priority=getVal('et-pri');t.status=getVal('et-status');t.prog=parseInt(getVal('et-prog'));
+  t.end=getVal('et-end');t.note=getVal('et-note');t.comments=getVal('et-comments');
+  closeModal('editTask');renderTasks();toast('تم تحديث المهمة');
+}
+
+// ============ ADD TASK ============
+function addTask(){
+  const name=getVal('at-name').trim();if(!name){toast('أدخل اسم المهمة','error');return;}
+  const t={id:nextTaskId++,name,emp:parseInt(getVal('at-emp')),cat:getVal('at-cat'),priority:getVal('at-pri'),
+    status:getVal('at-status'),start:getVal('at-start'),end:getVal('at-end'),prog:parseInt(getVal('at-prog')||0),note:getVal('at-note')};
+  tasks.unshift(t);
+  const empName=getEmp(t.emp).name;
+  activities.unshift({text:`تم إضافة مهمة "${name}" لـ ${empName}`,time:'الآن',color:'var(--accent)'});
+  notifications.unshift({id:Date.now(),type:'info',icon:'📋',title:'مهمة جديدة',text:`تم إضافة "${name}"`,time:'الآن'});
+  closeModal('addTask');renderTasks();renderActivity();updateMetrics();
+  setVal('at-name','');setVal('at-note','');setVal('at-prog',0);
+  toast('تمت إضافة المهمة بنجاح');
+}
+
+// ============ ADD EMPLOYEE ============
+function addEmployee(){
+  const name=getVal('ae-name').trim(),role=getVal('ae-role').trim();
+  if(!name||!role){toast('أدخل الاسم والمسمى الوظيفي','error');return;}
+  const emp={id:nextEmpId++,name,role,dept:getVal('ae-dept'),email:getVal('ae-email'),
+    phone:getVal('ae-phone'),color:getVal('ae-color'),join:getVal('ae-join'),notes:''};
+  employees.push(emp);
+  activities.unshift({text:`انضم ${name} إلى الفريق`,time:'الآن',color:'var(--green)'});
+  notifications.unshift({id:Date.now(),type:'done',icon:'👋',title:'موظف جديد',text:`${name} انضم إلى ${emp.dept}`,time:'الآن'});
+  closeModal('addEmp');
+  populateFilters();renderTeamGrid();renderTeamProg();renderActivity();updateMetrics();
+  setVal('ae-name','');setVal('ae-role','');setVal('ae-email','');setVal('ae-phone','');
+  toast(`تمت إضافة ${name} بنجاح`);
+}
+
+function deleteEmployee(id){
+  if(!confirm('هل أنت متأكد من حذف هذا الموظف؟'))return;
+  const emp=getEmp(id);
+  employees=employees.filter(e=>e.id!==id);
+  tasks=tasks.filter(t=>t.emp!==id);
+  activities.unshift({text:`تم حذف ${emp.name} من الفريق`,time:'الآن',color:'var(--red)'});
+  populateFilters();renderTeamGrid();renderTeamProg();renderTasks();updateMetrics();
+  toast(`تم حذف ${emp.name}`,'error');
+}
+
+// ============ TEAM GRID ============
+function renderTeamGrid(){
+  const q=fTeamSearch.toLowerCase();
+  const filtered=employees.filter(e=>!q||e.name.includes(fTeamSearch)||e.role.includes(fTeamSearch));
+  document.getElementById('team-grid').innerHTML=filtered.map(emp=>{
+    const mine=tasks.filter(t=>t.emp===emp.id);
+    const done=mine.filter(t=>t.status==='done').length;
+    const pct=mine.length?Math.round(done/mine.length*100):0;
+    const tLogs=timeLogs.filter(l=>l.empId===emp.id);
+    const totalHrs=Math.round(tLogs.reduce((s,l)=>s+l.duration,0)/3600*10)/10;
+    return `<div class="card" style="cursor:default">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar" style="width:44px;height:44px;font-size:16px;background:${clr(emp.color,'bg')};color:${clr(emp.color,'text')}">${initials(emp.name)}</div>
+          <div>
+            <div style="font-weight:700;font-size:14px;font-family:'Cairo',sans-serif">${emp.name}</div>
+            <div style="font-size:11px;color:var(--text3)">${emp.role} · ${emp.dept}</div>
+            <div style="display:flex;gap:2px;margin-top:2px">${Array.from({length:5},(_,i)=>`<span style="color:${i< (emp.rating||0)?'var(--amber)':'var(--text3)'}">★</span>`).join('')}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-ghost btn-sm" onclick="viewProfile(${emp.id})">👁</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteEmployee(${emp.id})">🗑</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px">
+        <div class="pstat"><div class="pstat-val" style="color:var(--accent)">${mine.length}</div><div class="pstat-lbl">مهمة</div></div>
+        <div class="pstat"><div class="pstat-val" style="color:var(--green)">${done}</div><div class="pstat-lbl">مكتمل</div></div>
+        <div class="pstat"><div class="pstat-val" style="color:var(--amber)">${totalHrs}س</div><div class="pstat-lbl">ساعات</div></div>
+      </div>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:4px">الإنجاز ${pct}%</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${clr(emp.color,'text')}"></div></div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text3)">
+        <span>📧 ${emp.email||'—'}</span><br><span>📱 ${emp.phone||'—'}</span><br>
+        <span>📅 انضم ${emp.join||'—'}</span>
+      </div>
+    </div>`;
+  }).join('')||'<div style="color:var(--text3);padding:2rem">لا توجد نتائج</div>';
+}
+
+// ============ PROFILE ============
+function viewProfile(id){
+  const emp=getEmp(id);
+  const mine=tasks.filter(t=>t.emp===id);
+  const done=mine.filter(t=>t.status==='done').length;
+  const pct=mine.length?Math.round(done/mine.length*100):0;
+  const empMtgs=meetings.filter(m=>m.attendees.includes(id));
+  const tLogs=timeLogs.filter(l=>l.empId===id);
+  const totalHrs=Math.round(tLogs.reduce((s,l)=>s+l.duration,0)/3600*10)/10;
+
+  document.getElementById('profile-content').innerHTML=`
+    <div class="profile-panel">
+      <div class="profile-header">
+        <div class="avatar" style="width:64px;height:64px;font-size:22px;background:${clr(emp.color,'bg')};color:${clr(emp.color,'text')}">${initials(emp.name)}</div>
+        <div>
+          <div class="profile-name">${emp.name}</div>
+          <div class="profile-role">${emp.role} · ${emp.dept}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">📧 ${emp.email||'—'} &nbsp;|&nbsp; 📱 ${emp.phone||'—'} &nbsp;|&nbsp; 📅 انضم ${emp.join||'—'}</div>
+        </div>
+        <button class="btn btn-danger btn-sm" style="margin-right:auto" onclick="deleteEmployee(${emp.id});nav('team',null)">حذف الموظف</button>
+      </div>
+      <div class="profile-stats">
+        <div class="pstat"><div class="pstat-val" style="color:var(--accent)">${mine.length}</div><div class="pstat-lbl">إجمالي المهام</div></div>
+        <div class="pstat"><div class="pstat-val" style="color:var(--green)">${pct}%</div><div class="pstat-lbl">نسبة الإنجاز</div></div>
+        <div class="pstat"><div class="pstat-val" style="color:var(--amber)">${totalHrs}س</div><div class="pstat-lbl">ساعات العمل</div></div>
+        <div class="pstat"><div class="pstat-val" style="color:var(--cyan)">${empMtgs.length}</div><div class="pstat-lbl">الاجتماعات</div></div>
+        <div class="pstat"><div class="pstat-val" style="color:var(--red)">${mine.filter(t=>t.status==='late').length}</div><div class="pstat-lbl">متأخرة</div></div>
+        <div class="pstat"><div class="pstat-val" style="color:var(--green)">${mine.filter(t=>t.status==='prog').length}</div><div class="pstat-lbl">جارية</div></div>
+      </div>
+      <div class="prog-bar" style="height:8px;margin-bottom:1.2rem"><div class="prog-fill" style="width:${pct}%;background:${clr(emp.color,'text')}"></div></div>
+      <div class="tab-bar">
+        <div class="tab active" onclick="switchTab(this,'pt-tasks')">المهام (${mine.length})</div>
+        <div class="tab" onclick="switchTab(this,'pt-mtgs')">الاجتماعات (${empMtgs.length})</div>
+        <div class="tab" onclick="switchTab(this,'pt-time')">سجل الوقت</div>
+        <div class="tab" onclick="switchTab(this,'pt-notes')">ملاحظات</div>
+      </div>
+      <div class="tab-content active" id="pt-tasks">
+        <table class="tbl"><thead><tr><th>المهمة</th><th>الفئة</th><th>الأولوية</th><th>الحالة</th><th>التقدم</th></tr></thead>
+        <tbody>${mine.map(t=>`<tr><td style="font-weight:600">${t.name}</td><td style="font-size:11px;color:var(--text2)">${t.cat}</td><td><span class="pdot ${t.priority}"></span> ${prioLabel(t.priority)}</td><td><span class="badge ${t.status}">${statusLabel(t.status)}</span></td><td style="min-width:80px"><div style="font-size:10px;color:var(--text3)">${t.prog}%</div><div class="prog-bar"><div class="prog-fill" style="width:${t.prog}%;background:var(--accent)"></div></div></td></tr>`).join('')||'<tr><td colspan="5" style="color:var(--text3);text-align:center;padding:1rem">لا توجد مهام</td></tr>'}</tbody></table>
+      </div>
+      <div class="tab-content" id="pt-mtgs">
+        ${empMtgs.map(m=>`<div class="meeting-card ${m.status==='done'?'done-m':'upcoming'}"><div class="meeting-title">${m.title}</div><div class="meeting-meta"><span>${m.date}</span><span>${m.time}</span><span>${m.duration}د</span><span>${m.type}</span></div></div>`).join('')||'<div style="color:var(--text3);padding:1rem">لا توجد اجتماعات</div>'}
+      </div>
+      <div class="tab-content" id="pt-time">
+        ${tLogs.map(l=>`<div class="tracker-row"><span style="flex:1">${tasks.find(t=>t.id===l.taskId)?.name||'—'}</span><span style="color:var(--text2)">${l.date}</span><span style="color:var(--accent);font-weight:700">${fmtDur(l.duration)}</span></div>`).join('')||'<div style="color:var(--text3);padding:1rem">لا يوجد سجل</div>'}
+      </div>
+      <div class="tab-content" id="pt-notes">
+        <textarea class="fi" style="width:100%;min-height:120px" placeholder="ملاحظات عن الموظف...">${emp.notes||''}</textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="saveEmpNotes(${emp.id})">حفظ الملاحظات</button>
+      </div>
+    </div>`;
+  nav('profile',null);
+}
+
+function saveEmpNotes(id){
+  const emp=getEmp(id);
+  emp.notes=document.querySelector('#pt-notes textarea').value;
+  toast('تم حفظ الملاحظات');
+}
+
+function switchTab(el,targetId){
+  el.closest('.profile-panel').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.closest('.profile-panel').querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(targetId).classList.add('active');
+}
+
+// ============ MEETINGS ============
+let fMtgState='all';
+function activeMtgBtn(el){document.querySelectorAll('#sec-meetings .btn').forEach(b=>b.classList.remove('btn-primary'));el.classList.add('btn-primary');}
+
+let currentMonth=new Date().getMonth();
+let currentYear=new Date().getFullYear();
+
+function showCalendar(){
+  const cal=document.getElementById('calendar-view');
+  cal.style.display=cal.style.display==='none'?'block':'none';
+  if(cal.style.display==='block') renderCalendar();
+}
+
+function prevMonth(){
+  currentMonth--;
+  if(currentMonth<0){currentMonth=11;currentYear--;}
+  renderCalendar();
+}
+
+function nextMonth(){
+  currentMonth++;
+  if(currentMonth>11){currentMonth=0;currentYear++;}
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const title=document.getElementById('calendar-title');
+  const grid=document.getElementById('calendar-grid');
+  const date=new Date(currentYear,currentMonth,1);
+  const daysInMonth=new Date(currentYear,currentMonth+1,0).getDate();
+  const startDay=date.getDay();
+  title.textContent=new Date(currentYear,currentMonth).toLocaleDateString('ar-SA',{year:'numeric',month:'long'});
+  let html='<div style="font-weight:700;text-align:center;padding:4px">الأحد</div><div style="font-weight:700;text-align:center;padding:4px">الاثنين</div><div style="font-weight:700;text-align:center;padding:4px">الثلاثاء</div><div style="font-weight:700;text-align:center;padding:4px">الأربعاء</div><div style="font-weight:700;text-align:center;padding:4px">الخميس</div><div style="font-weight:700;text-align:center;padding:4px">الجمعة</div><div style="font-weight:700;text-align:center;padding:4px">السبت</div>';
+  for(let i=0;i<startDay;i++) html+='<div></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const mtgs=meetings.filter(m=>new Date(m.date).toDateString()===new Date(currentYear,currentMonth,d).toDateString());
+    html+=`<div style="text-align:center;padding:4px;border:1px solid var(--border);border-radius:4px;background:${mtgs.length?'var(--accent-bg)':''};cursor:pointer" onclick="viewDayMeetings(${d})">${d}${mtgs.length?`<br><small>${mtgs.length} اجتماع</small>`:''}</div>`;
+  }
+  grid.innerHTML=html;
+}
+
+function viewDayMeetings(day){
+  const dateStr=new Date(currentYear,currentMonth,day).toISOString().split('T')[0];
+  const mtgs=meetings.filter(m=>m.date===dateStr);
+  if(mtgs.length) alert(`اجتماعات ${dateStr}:\n${mtgs.map(m=>m.title).join('\n')}`);
+  else alert('لا توجد اجتماعات في هذا اليوم');
+}
+
+function renderChat(){
+  document.getElementById('chat-messages').innerHTML=messages.map(msg=>{
+    const emp=getEmp(msg.from);
+    return `<div style="margin-bottom:10px;padding:8px;border-radius:8px;background:var(--surface2)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <div class="avatar" style="width:24px;height:24px;font-size:10px;background:${clr(emp.color,'bg')};color:${clr(emp.color,'text')}">${initials(emp.name)}</div>
+        <span style="font-weight:700;font-size:12px">${emp.name}</span>
+        <span style="font-size:10px;color:var(--text3)">${new Date(msg.time).toLocaleTimeString('ar-SA')}</span>
+      </div>
+      <div style="font-size:14px">${msg.text}</div>
+    </div>`;
+  }).join('')||'<div style="color:var(--text3);padding:2rem;text-align:center">لا توجد رسائل</div>';
+  document.getElementById('chat-members').innerHTML=employees.map(emp=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+    <div class="avatar" style="width:32px;height:32px;font-size:12px;background:${clr(emp.color,'bg')};color:${clr(emp.color,'text')}">${initials(emp.name)}</div>
+    <span>${emp.name}</span>
+  </div>`).join('');
+}
+function renderMeetings(){
+  const filtered=meetings.filter(m=>fMtg==='all'||m.status===fMtg);
+  document.getElementById('meetings-list').innerHTML=filtered.map(m=>{
+    const ats=m.attendees.map(id=>getEmp(id));
+    return `<div class="meeting-card ${m.status==='done'?'done-m':m.status==='upcoming'?'upcoming':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div class="meeting-title">${m.title}</div>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-ghost btn-sm" onclick="toggleMtgStatus(${m.id})">${m.status==='upcoming'?'✅':'↩'}</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteMeeting(${m.id})">🗑</button>
+        </div>
+      </div>
+      <div class="meeting-meta"><span>📅 ${m.date}</span><span>🕐 ${m.time}</span><span>⏱ ${m.duration}د</span><span>🏷 ${m.type}</span></div>
+      ${m.desc?`<div style="font-size:11px;color:var(--text2);margin-top:5px">${m.desc}</div>`:''}
+      <div class="meeting-attendees" style="margin-top:7px">${ats.map(e=>`<div class="meeting-avatar" style="background:${clr(e.color||'blue','bg')};color:${clr(e.color||'blue','text')}" title="${e.name}">${initials(e.name||'؟')}</div>`).join('')}</div>
+    </div>`;
+  }).join('')||'<div style="color:var(--text3);padding:2rem;text-align:center">لا توجد اجتماعات</div>';
+  renderMtgChart();
+}
+
+function toggleMtgStatus(id){
+  const m=meetings.find(m=>m.id===id);if(m)m.status=m.status==='upcoming'?'done':'upcoming';
+  renderMeetings();updateMetrics();
+}
+
+function deleteMeeting(id){
+  meetings=meetings.filter(m=>m.id!==id);
+  renderMeetings();updateMetrics();toast('تم حذف الاجتماع','error');
+}
+
+function addMeeting(){
+  const title=getVal('am-title').trim();if(!title){toast('أدخل عنوان الاجتماع','error');return;}
+  const sel=document.getElementById('am-attendees');
+  const attendees=Array.from(sel.selectedOptions).map(o=>parseInt(o.value));
+  const m={id:nextMtgId++,title,date:getVal('am-date'),time:getVal('am-time'),
+    duration:parseInt(getVal('am-dur')),type:getVal('am-type'),attendees,desc:getVal('am-desc'),status:'upcoming'};
+  meetings.unshift(m);
+  notifications.unshift({id:Date.now(),type:'meeting',icon:'📅',title:'اجتماع جديد',text:`"${title}" مجدول ${m.date} ${m.time}`,time:'الآن'});
+  closeModal('addMeeting');renderMeetings();updateMetrics();toast('تم جدولة الاجتماع');
+  setVal('am-title','');setVal('am-desc','');
+}
+
+function addMessage(){
+  const from=parseInt(getVal('msg-from'));
+  const text=getVal('msg-text').trim();
+  if(!text){toast('أدخل الرسالة','error');return;}
+  const msg={id:nextMsgId++,from,text,time:new Date().toISOString()};
+  messages.push(msg);
+  closeModal('addMessage');renderChat();toast('تم إرسال الرسالة');
+  setVal('msg-text','');
+}
+
+// ============ GANTT ============
+const MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس'];
+function renderGantt(){
+  const total=8;
+  document.getElementById('gantt-container').innerHTML=`
+    <div class="gantt-header">${MONTHS.map(m=>`<div class="gantt-month">${m}</div>`).join('')}</div>
+    ${projects.map(p=>{
+      const left=(p.start/total)*100,width=(p.len/total)*100;
+      return `<div class="gantt-row-wrap">
+        <div class="gantt-name">${p.name}</div>
+        <div class="gantt-track">
+          <div class="gantt-bar" style="left:${left}%;width:${width}%;background:${p.color}">${p.name}</div>
+        </div>
+        <button class="btn btn-danger btn-sm" style="margin-right:6px;flex-shrink:0" onclick="deleteProject(${p.id})">✕</button>
+      </div>`;
+    }).join('')}`;
+}
+
+function deleteProject(id){projects=projects.filter(p=>p.id!==id);renderGantt();toast('تم حذف المشروع','error');}
+function addProject(){
+  const name=getVal('ap-name').trim();if(!name){toast('أدخل اسم المشروع','error');return;}
+  projects.push({id:nextProjId++,name,start:parseInt(getVal('ap-start')),len:parseInt(getVal('ap-len')),color:getVal('ap-color')});
+  closeModal('addProject');renderGantt();toast('تمت إضافة المشروع');setVal('ap-name','');
+}
+
+// ============ TRACKER ============
+function populateTimerSelects(){
+  const ts=document.getElementById('timer-task-sel');
+  const es=document.getElementById('timer-emp-sel');
+  ts.innerHTML=tasks.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  es.innerHTML=employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+}
+
+function timerToggle(){
+  if(!timerRunning){
+    timerRunning=true;
+    document.getElementById('timer-start').textContent='⏸ إيقاف مؤقت';
+    timerInterval=setInterval(()=>{timerSecs++;document.getElementById('timer-display').textContent=fmtTime(timerSecs);},1000);
+  } else {
+    timerRunning=false;
+    document.getElementById('timer-start').textContent='▶ استمرار';
+    clearInterval(timerInterval);
+  }
+}
+
+function timerReset(){
+  clearInterval(timerInterval);timerRunning=false;timerSecs=0;
+  document.getElementById('timer-display').textContent='00:00:00';
+  document.getElementById('timer-start').textContent='▶ ابدأ';
+}
+
+function timerLog(){
+  if(timerSecs<1){toast('لم يبدأ التوقيت بعد','error');return;}
+  const log={id:nextLogId++,empId:parseInt(getVal('timer-emp-sel')),taskId:parseInt(getVal('timer-task-sel')),
+    duration:timerSecs,date:new Date().toISOString().split('T')[0],note:tasks.find(t=>t.id===parseInt(getVal('timer-task-sel')))?.name||''};
+  timeLogs.unshift(log);
+  renderTimeLogs();renderTimeChart();timerReset();toast('تم حفظ سجل الوقت');
+}
+
+function renderTimeLogs(){
+  document.getElementById('time-log-list').innerHTML=timeLogs.slice(0,8).map(l=>{
+    const emp=getEmp(l.empId),tsk=tasks.find(t=>t.id===l.taskId);
+    return `<div class="tracker-row">
+      <div class="avatar" style="width:24px;height:24px;font-size:9px;background:${clr(emp.color,'bg')};color:${clr(emp.color,'text')}">${initials(emp.name)}</div>
+      <div style="flex:1;font-size:11px">${tsk?.name||l.note||'—'}</div>
+      <div style="font-size:10px;color:var(--text3)">${l.date}</div>
+      <div style="font-weight:700;color:var(--accent);font-size:12px">${fmtDur(l.duration)}</div>
+    </div>`;
+  }).join('')||'<div style="color:var(--text3);padding:1rem">لا يوجد سجل بعد</div>';
+}
+
+// ============ MODALS ============
+function openModal(name){document.getElementById('modal-'+name).classList.add('open');}
+function closeModal(name){document.getElementById('modal-'+name).classList.remove('open');}
+function closeOverlay(e,id){if(e.target===document.getElementById(id))closeModal(id);}
+
+function populateSelect(id,selected){
+  const el=document.getElementById(id);
+  el.innerHTML=employees.map(e=>`<option value="${e.id}" ${e.id===selected?'selected':''}>${e.name}</option>`).join('');
+}
+
+function populateFilters(){
+  ['at-emp','ae-filter-dummy'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');});
+  const ef=document.getElementById('emp-filter');
+  if(ef){ef.innerHTML='<option value="all">كل الموظفين</option>'+employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');}
+  populateSelect('at-emp');
+  const am=document.getElementById('am-attendees');
+  if(am)am.innerHTML=employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+}
+
+// ============ NOTIFICATIONS ============
+function renderNotifs(){
+  const colors={late:'var(--red)',done:'var(--green)',info:'var(--accent)',meeting:'var(--cyan)'};
+  document.getElementById('notif-list').innerHTML=notifications.map(n=>`
+    <div class="notif-item">
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${n.icon}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:13px;color:${colors[n.type]||'var(--text)'}">${n.title}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px">${n.text}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">${n.time}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="removeNotif(${n.id})">✕</button>
+    </div>`).join('')||'<div style="color:var(--text3);text-align:center;padding:2rem">لا توجد إشعارات</div>';
+  document.getElementById('nb-notif').textContent=notifications.length;
+}
+
+function removeNotif(id){notifications=notifications.filter(n=>n.id!==id);renderNotifs();}
+function clearNotifs(){notifications=[];renderNotifs();toast('تم مسح الإشعارات');}
+
+// ============ CHARTS ============
+function mkChart(id,cfg){
+  if(activeCharts[id]){try{activeCharts[id].destroy()}catch(e){}}
+  const el=document.getElementById(id);if(!el)return;
+  activeCharts[id]=new Chart(el,cfg);
+}
+
+const cs=()=>getComputedStyle(document.body);
+const tv=(v)=>cs().getPropertyValue(v).trim();
+
+function renderDonut(){
+  const done=tasks.filter(t=>t.status==='done').length,prog=tasks.filter(t=>t.status==='prog').length,
+    pend=tasks.filter(t=>t.status==='pend').length,late=tasks.filter(t=>t.status==='late').length,review=tasks.filter(t=>t.status==='review').length;
+  mkChart('c-donut',{type:'doughnut',data:{labels:['مكتملة','جاري','معلقة','متأخرة','مراجعة'],
+    datasets:[{data:[done,prog,pend,late,review],backgroundColor:['#2dd4a0','#4f7dff','#f5a623','#ff5e6c','#38c9e8'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:false}}}});
+  document.getElementById('donut-leg').innerHTML=[{c:'#2dd4a0',l:'مكتملة',v:done},{c:'#4f7dff',l:'جاري',v:prog},{c:'#f5a623',l:'معلقة',v:pend},{c:'#ff5e6c',l:'متأخرة',v:late},{c:'#38c9e8',l:'مراجعة',v:review}]
+    .map(x=>`<span style="display:inline-flex;align-items:center;gap:4px;margin-left:10px;font-size:11px;color:${x.c}"><span style="width:8px;height:8px;border-radius:50%;background:${x.c}"></span>${x.l} (${x.v})</span>`).join('');
+}
+
+function renderMtgChart(){
+  const done=meetings.filter(m=>m.status==='done').length,upcoming=meetings.filter(m=>m.status==='upcoming').length;
+  mkChart('c-mtg',{type:'doughnut',data:{labels:['منتهية','قادمة'],datasets:[{data:[done,upcoming],backgroundColor:['#2dd4a0','#f5a623'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}});
+  document.getElementById('mtg-stats').innerHTML=`<div style="display:flex;gap:12px;font-size:12px">
+    <span style="color:var(--green)">✅ منتهية: ${done}</span><span style="color:var(--amber)">📅 قادمة: ${upcoming}</span><span style="color:var(--text2)">المجموع: ${meetings.length}</span></div>`;
+}
+
+function renderLineChart(){
+  mkChart('c-line',{type:'line',data:{labels:['سبت','أكت','نوف','ديس','يناير','فبراير'],
+    datasets:[{label:'مكتمل',data:[5,7,9,8,12,tasks.filter(t=>t.status==='done').length],borderColor:'#2dd4a0',backgroundColor:'rgba(45,212,160,0.08)',fill:true,tension:.4,pointRadius:4,borderWidth:2},
+      {label:'جاري',data:[3,4,3,5,4,tasks.filter(t=>t.status==='prog').length],borderColor:'#4f7dff',fill:false,tension:.4,pointRadius:4,borderWidth:2,borderDash:[4,3]}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b90a0',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#8b90a0',stepSize:2},grid:{color:'rgba(127,127,200,0.07)'}}}}});
+}
+
+function renderBarChart(){
+  mkChart('c-bar',{type:'bar',data:{labels:employees.map(e=>e.name.split(' ')[0]),
+    datasets:[{data:employees.map(e=>empPct(e.id)),backgroundColor:employees.map(e=>clr(e.color,'text')),borderRadius:6,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b90a0',font:{size:10}},grid:{display:false}},y:{max:100,ticks:{color:'#8b90a0',callback:v=>v+'%'},grid:{color:'rgba(127,127,200,0.07)'}}}}});
+}
+
+function renderCatChart(){
+  const cats={};tasks.forEach(t=>{cats[t.cat]=(cats[t.cat]||0)+1;});
+  const cc=['#4f7dff','#7c5cfc','#f5a623','#2dd4a0','#38c9e8','#ff5e6c'];
+  mkChart('c-cat',{type:'doughnut',data:{labels:Object.keys(cats),datasets:[{data:Object.values(cats),backgroundColor:cc,borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{display:true,position:'bottom',labels:{color:'#8b90a0',font:{size:10},boxWidth:8,padding:10}}}}});
+}
+
+function renderTimeChart(){
+  const empHrs=employees.map(e=>Math.round(timeLogs.filter(l=>l.empId===e.id).reduce((s,l)=>s+l.duration,0)/3600*10)/10);
+  mkChart('c-time',{type:'bar',data:{labels:employees.map(e=>e.name.split(' ')[0]),
+    datasets:[{data:empHrs,backgroundColor:employees.map(e=>clr(e.color,'text')),borderRadius:6,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b90a0',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#8b90a0',callback:v=>v+'س'},grid:{color:'rgba(127,127,200,0.07)'}}}}});
+}
+
+function renderAllCharts(){
+  renderDonut();renderLineChart();renderBarChart();renderCatChart();
+}
+
+// ============ INIT ============
+async function init(){
+  const today=new Date().toISOString().split('T')[0];
+  setVal('at-start',today);setVal('at-end',new Date(Date.now()+7*86400000).toISOString().split('T')[0]);
+  setVal('am-date',today);setVal('ae-join',today);
+  populateFilters();
+  checkLateTasks();
+  updateMetrics();renderTeamProg();renderActivity();renderTodayMeetings();renderTasks();renderNotifs();renderChat();
+  setTimeout(renderAllCharts,200);
+}
+init();
+</script>
+</body>
+</html>

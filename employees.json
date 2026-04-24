@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "saif",
+    "role": "مهندس إلكترونيات",
+    "dept": "تقنية",
+    "email": "saif@company.com",
+    "phone": "+966501234567",
+    "color": "blue",
+    "join": "2024-01-01",
+    "notes": "متخصص في الإلكترونيات والأردوينو",
+    "tasks": ["sun plats", "arduido"]
+  },
+  {
+    "id": 2,
+    "name": "muhmad",
+    "role": "مهندس إلكترونيات",
+    "dept": "تقنية",
+    "email": "muhmad@company.com",
+    "phone": "+966502345678",
+    "color": "green",
+    "join": "2024-01-01",
+    "notes": "متخصص في الإضاءة والإلكترونيات",
+    "tasks": ["led lights"]
+  },
+  {
+    "id": 3,
+    "name": "abood",
+    "role": "مهندس ميكانيكي",
+    "dept": "تقنية",
+    "email": "abood@company.com",
+    "phone": "+966503456789",
+    "color": "purple",
+    "join": "2024-01-01",
+    "notes": "متخصص في المحركات والحساسات",
+    "tasks": ["resistor", "starter", "motor", "ultra sonic sensor"]
+  }
+]
